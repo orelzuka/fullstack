@@ -1,8 +1,8 @@
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { NavLink, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -50,6 +50,8 @@ export default function Register() {
     mode: "onChange",
   });
 
+  const test = async () => {};
+
   async function submit(values) {
     // console.log(values);
     try {
@@ -60,13 +62,13 @@ export default function Register() {
           "Content-type": "application/json",
         },
       });
-      console.log(await response.json());
+      const responseFromBackend = await response.json();
       if (response.ok) {
-        toast.success(response.message);
+        toast.success(responseFromBackend.message);
         navigate("/login");
         reset(defaultValues);
       } else {
-        toast.error(response.message);
+        toast.error(responseFromBackend.message);
       }
     } catch (error) {
       console.log(error);
@@ -148,6 +150,9 @@ export default function Register() {
           </label>
           {errors.rgpd && <p className="text-red-500">{errors.rgpd.message}</p>}
         </div>
+        <NavLink to="/login" className="text-blue-500">
+          Déjà inscrit ?
+        </NavLink>
         <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
           Submit
         </button>

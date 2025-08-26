@@ -1,10 +1,15 @@
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Login() {
+  const navigate = useNavigate();
+
+  const { login } = useAuth();
+
   const defaultValues = {
     data: "",
     password: "",
@@ -27,8 +32,9 @@ export default function Login() {
   });
 
   async function submit(values) {
+    // console.log(values);
     try {
-      const response = await fetch("http://localhost:3000/user/login", {
+      const response = await fetch("http://localhost:5000/user/login", {
         method: "POST",
         body: JSON.stringify(values),
         headers: {
@@ -36,8 +42,12 @@ export default function Login() {
         },
       });
       const responseFromBackend = await response.json();
+      console.log(responseFromBackend);
+
       if (response.ok) {
-        toast.success(responseFromBackend.message);
+        toast.success("Bien connecté");
+        login(responseFromBackend.user);
+
         navigate("/");
         reset(defaultValues);
       } else {
@@ -47,6 +57,7 @@ export default function Login() {
       console.log(error);
     }
     // reset(defaultValues);
+    // requete HTTP
   }
   return (
     <div className="w-full max-w-md p-6 bg-white shadow-xl rounded">
@@ -56,7 +67,7 @@ export default function Login() {
       >
         <div className="flex flex-col mb-2">
           <label htmlFor="data" className="mb-2">
-            Pseudo ou E-mail
+            Pseudo ou Email
           </label>
           <input
             {...register("data")}
@@ -80,10 +91,10 @@ export default function Login() {
             <p className="text-red-500">{errors.password.message}</p>
           )}
         </div>
-        <NavLink to="/register" className="text-blue-500 hover:text-black">
+        <NavLink to="/register" className="text-blue-500">
           Pas encore inscrit ?
         </NavLink>
-        <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 hover:cursor-pointer">
+        <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
           Submit
         </button>
       </form>
